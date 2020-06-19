@@ -13,7 +13,7 @@ const ColorList = ({ colors, updateColors }) => {
 
     const handleSubmitNewColor = (event) => {
         event.preventDefault();
-        
+
         authAxios().post('/api/colors', colorToAdd)
             .then(response => {
                 updateColors(
@@ -22,6 +22,8 @@ const ColorList = ({ colors, updateColors }) => {
                         colorToAdd
                     ]
                 );
+
+                setColorToAdd(initialColor);
             })
             .catch(error => {
                 console.log(error);
@@ -46,6 +48,8 @@ const ColorList = ({ colors, updateColors }) => {
                 });
 
                 updateColors(resultColors);
+                setColorToEdit(initialColor);
+                setEditing(false);
             })
             .catch(error => {
                 console.log(error);
