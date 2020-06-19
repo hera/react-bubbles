@@ -18,9 +18,19 @@ const ColorList = ({ colors, updateColors }) => {
 
     const saveEdit = e => {
         e.preventDefault();
-        // Make a put request to save your updated color
-        // think about where will you get the id from...
-        // where is is saved right now?
+        console.log('asdf');
+
+        authAxios().put(`/api/colors/${colorToEdit.id}`, colorToEdit)
+            .then(response => {
+                console.log(`Edited color with id #${colorToEdit.id}`);
+                return authAxios().get('/api/colors');
+            })
+            .then(response => {
+                updateColors(response.data);
+            })
+            .catch(error => {
+                console.log(error);
+            });
     };
 
     const deleteColor = color => {
