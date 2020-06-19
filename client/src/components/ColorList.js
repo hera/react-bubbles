@@ -7,9 +7,26 @@ const initialColor = {
 };
 
 const ColorList = ({ colors, updateColors }) => {
-    console.log(colors);
     const [editing, setEditing] = useState(false);
     const [colorToEdit, setColorToEdit] = useState(initialColor);
+    const [colorToAdd, setColorToAdd] = useState(initialColor);
+
+    const handleSubmitNewColor = (event) => {
+        event.preventDefault();
+        
+        authAxios().post('/api/colors', colorToAdd)
+            .then(response => {
+                updateColors(
+                    [
+                        ...colors,
+                        colorToAdd
+                    ]
+                );
+            })
+            .catch(error => {
+                console.log(error);
+            });
+    }
 
     const editColor = color => {
         setEditing(true);
@@ -18,15 +35,17 @@ const ColorList = ({ colors, updateColors }) => {
 
     const saveEdit = e => {
         e.preventDefault();
-        console.log('asdf');
 
         authAxios().put(`/api/colors/${colorToEdit.id}`, colorToEdit)
             .then(response => {
-                console.log(`Edited color with id #${colorToEdit.id}`);
-                return authAxios().get('/api/colors');
-            })
-            .then(response => {
-                updateColors(response.data);
+                const resultColors = colors.map(item => {
+                    if (item.id === colorToEdit.id) {
+                        return colorToEdit;
+                    }
+                    return item;
+                });
+
+                updateColors(resultColors);
             })
             .catch(error => {
                 console.log(error);
@@ -36,17 +55,15 @@ const ColorList = ({ colors, updateColors }) => {
     const deleteColor = color => {
         authAxios().delete(`/api/colors/${color.id}`)
             .then(response => {
-                console.log(`Deleted color with id #${color.id}`);
+                const resultColors = colors.filter(item => {
+                    return item.id !== color.id;
+                });
+
+                updateColors(resultColors);
             })
             .catch(error => {
                 console.log(error);
             });
-
-        const resultColors = colors.filter(item => {
-            return item.id !== color.id;
-        });
-
-        updateColors(resultColors);
     };
 
     return (
@@ -102,6 +119,37 @@ const ColorList = ({ colors, updateColors }) => {
                     </div>
                 </form>
             )}
+
+            <h5>Add color:</h5>
+
+            <form onSubmit={handleSubmitNewColor}>
+                <p>
+                    Color name:
+                    <input
+                        type="text"
+                        onChange={
+                            e => setColorToAdd({ ...colorToAdd, color: e.target.value })
+                        }
+                        value={colorToAdd.color}
+                    />
+                </p>
+                <p>
+                    Color hex:
+                    <input
+                        onChange={e =>
+                            setColorToAdd({
+                                ...colorToAdd,
+                                code: { hex: e.target.value }
+                            })
+                        }
+                        value={colorToAdd.code.hex}
+                    />
+                </p>
+                <p>
+                    <button type="submit">ADD</button>
+                </p>
+            </form>
+
             <div className="spacer" />
             {/* stretch - build another form here to add a color */}
         </div>
