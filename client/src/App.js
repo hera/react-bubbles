@@ -17,7 +17,7 @@ function App() {
     return (
         <Container>
             <Header loggedIn={loggedIn} setLoggedIn={setLoggedIn} />
-            <PrivateRoute path="/" component={BubblePage} />
+            <PrivateRoute exact path="/" component={BubblePage} />
 
             <Route path="/login">
                 <Login setLoggedIn={setLoggedIn} />
